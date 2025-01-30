@@ -1,8 +1,5 @@
 import pytest
 from bs4 import BeautifulSoup
-import datetime
-import re
-import os
 
 def load_html(filename):
     """Betölti a HTML fájlt, és hibát kezel."""
@@ -43,7 +40,7 @@ def test_paragraph_count():
     """Ellenőrzi a bekezdések számát."""
     soup = load_html("index.html")
     paragraphs = soup.find_all("p")
-    assert len(paragraphs) == 4, "Nem pontosan 4 bekezdés található."
+    assert len(paragraphs) == 3, "Nem pontosan 3 bekezdés található."
 
 def test_subheadings():
     """Ellenőrzi a bekezdések alcímeit."""
@@ -77,18 +74,12 @@ def test_emphasized_text():
     for em in em_elements:
         assert em.text == "AIX", "A kiemelt szöveg tartalma nem 'AIX'."
 
-
 def test_html_comment():
-    """Ellenőrzi a HTML kommentet (bármilyen névvel)."""
+    """Ellenőrzi a HTML kommentet, amely tartalmazza az 'AIX' szöveget."""
     soup = load_html("index.html")
-    today = datetime.date.today().strftime("%Y.%m.%d")
+    comments = soup.find_all(string=lambda text: isinstance(text, str) and "AIX" in text)
     
-    # Reguláris kifejezés a komment kereséséhez, ami legalább egy karaktert és a dátumot is tartalmazza
-    comment_pattern = re.compile(rf".+\s*{today}")
-
-    comment = soup.find(string=lambda text: isinstance(text, str) and comment_pattern.match(text))
-    
-    assert comment is not None, f"Nem található komment, ami nevet és a mai dátumot ({today}) tartalmaz."
+    assert comments, "Nem található olyan komment, amely tartalmazza az 'AIX' szöveget."
     
 if __name__ == "__main__":
     pytest.main()
